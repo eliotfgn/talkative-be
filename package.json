@@ -4,6 +4,9 @@
   "description": "Forum app backend based on express",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
+  },
   "dependencies": {
     "@prisma/client": "^4.12.0",
     "cors": "^2.8.5",
