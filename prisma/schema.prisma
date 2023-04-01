@@ -11,11 +11,21 @@ datasource db {
 }
 
 model User {
-  id String @id @default(uuid())
-  username String @unique
-  email String @unique
-  password String
-  firstname String?
-  lastname String?
+  id         String  @id @default(uuid())
+  username   String  @unique
+  email      String  @unique
+  password   String
+  firstname  String?
+  lastname   String?
   profilePic String?
+}
+
+model Post {
+  id        BigInt   @id @default(autoincrement())
+  title     String
+  content   String?
+  viewsCount Int?
+  likesCount Int?
+  createdAt DateTime
+  updatedAt DateTime
 }
