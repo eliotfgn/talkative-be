@@ -28,4 +28,14 @@ model Post {
   likesCount Int?
   createdAt DateTime
   updatedAt DateTime
+  category  Category @relation(fields: [categoryId], references: [id])
+  categoryId BigInt
+}
+
+model Category {
+  id BigInt @id @default(autoincrement())
+  name String
+  createdAt DateTime
+  banner String?
+  posts Post[]
 }
