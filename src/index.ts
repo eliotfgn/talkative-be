@@ -1,3 +1,3 @@
-import Express from express;
+import Express, { Application } from "express";
 
-const app = Express();
+const app: Application = Express();
