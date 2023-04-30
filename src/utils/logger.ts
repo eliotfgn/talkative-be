@@ -6,7 +6,9 @@ const logger = winston.createLogger({
   level: "debug",
   format: combine(
     prettyPrint(),
-    timestamp(),
+    timestamp({
+      format: "MMM-DD-YYYY hh:mm:ss"
+    }),
     colorize(),
     printf(({ level, message, timestamp }) => {
       return `[${timestamp}] ${level}: ${message}`;
