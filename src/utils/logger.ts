@@ -11,7 +11,7 @@ const logger = winston.createLogger({
     }),
     colorize(),
     printf(({ level, message, timestamp }) => {
-      return `[${timestamp}] ${level}: ${message}`;
+      return `[${level}] ${timestamp}: ${message}`;
     }),
   ),
   transports: [new winston.transports.Console],
