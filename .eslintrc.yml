@@ -13,4 +13,4 @@ parserOptions:
 plugins:
   - '@typescript-eslint'
   - 'prettier'
-rules: { '@typescript-eslint/no-unused-vars': 'error' }
+rules: { '@typescript-eslint/no-unused-vars': 'warn' }
