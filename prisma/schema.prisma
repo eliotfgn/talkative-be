@@ -10,11 +10,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model Account {
+  id       String   @id @default(uuid())
+  email    String   @unique
+  password String
+  profile  Profile?
+}
+
+model Profile {
   id         String   @id @default(uuid())
+  account    Account  @relation(fields: [accountId], references: [id])
+  accountId  String   @unique
   username   String   @unique
-  email      String   @unique
-  password   String
   firstname  String?
   lastname   String?
   profilePic String?
@@ -35,7 +42,7 @@ model Post {
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId BigInt
   replies    Reply[]
-  author     User     @relation(fields: [authorId], references: [id])
+  author     Profile  @relation(fields: [authorId], references: [id])
   authorId   String
 }
 
@@ -54,7 +61,7 @@ model Reply {
   content       String
   createdAt     DateTime
   updatedAt     DateTime
-  author        User     @relation(fields: [authorId], references: [id])
+  author        Profile  @relation(fields: [authorId], references: [id])
   authorId      String
   replies       Reply[]  @relation("ReplyToReply")
   parentReply   Reply?   @relation("ReplyToReply", fields: [parentReplyId], references: [id])
