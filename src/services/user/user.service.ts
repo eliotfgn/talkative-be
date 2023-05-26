@@ -5,17 +5,30 @@ import { Account, Profile } from '@prisma/client';
 import profileRepository from '../../repositories/profile.repository';
 
 class UserService {
-  async create(payload: User): Promise<any> {
+  async create(payload: User) {
     payload.account.password = await hashPassword(payload.account.password);
 
-    accountRepository.create({
+    if (await this.emailExist(payload.account.email)) {
+      return;
+    }
+
+    if (await this.usernameExist(payload.profile.username)) {
+      return;
+    }
+
+    const data = await accountRepository.create({
       data: {
         ...payload.account,
         profile: {
           create: payload.profile,
         },
       },
+      include: {
+        profile: true,
+      },
     });
+
+    return payload.profile;
   }
 
   async emailExist(email: string): Promise<boolean> {
