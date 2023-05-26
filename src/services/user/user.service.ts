@@ -123,7 +123,16 @@ class UserService {
     };
   }
 
-  async update(id: string): Promise<any> {}
+  async update(id: string, payload: ProfileDtoType): Promise<UserResponse | null> {
+    const data = await profileRepository.update({
+      where: {
+        accountId: id,
+      },
+      data: payload,
+    });
+
+    return this.findById(id);
+  }
 
   async delete(id: string): Promise<any> {}
 }
