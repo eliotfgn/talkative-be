@@ -21,7 +21,7 @@ model Account {
 
 model Profile {
   id         String   @id @default(uuid())
-  account    Account  @relation(fields: [accountId], references: [id])
+  account    Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
   accountId  String   @unique
   username   String   @unique
   firstname  String?
@@ -44,7 +44,7 @@ model Post {
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId BigInt
   replies    Reply[]
-  author     Profile  @relation(fields: [authorId], references: [id])
+  author     Profile  @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId   String
 }
 
@@ -59,14 +59,14 @@ model Category {
 
 model Reply {
   id            BigInt   @id @default(autoincrement())
-  post          Post     @relation(fields: [postId], references: [id])
+  post          Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId        BigInt
   content       String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  author        Profile  @relation(fields: [authorId], references: [id])
+  author        Profile  @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId      String
   replies       Reply[]  @relation("ReplyToReply")
-  parentReply   Reply?   @relation("ReplyToReply", fields: [parentReplyId], references: [id])
+  parentReply   Reply?   @relation("ReplyToReply", fields: [parentReplyId], references: [id], onDelete: Cascade)
   parentReplyId BigInt?
 }
