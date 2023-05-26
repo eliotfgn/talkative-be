@@ -162,7 +162,15 @@ class UserService {
     });
   }
 
-  async delete(id: string): Promise<any> {}
+  async delete(id: string): Promise<boolean> {
+    await accountRepository.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    return true;
+  }
 }
 
 export default UserService;
