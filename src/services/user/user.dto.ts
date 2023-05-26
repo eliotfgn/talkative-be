@@ -1,35 +1,25 @@
-import { IsEmail, Length } from "class-validator";
+import { z } from 'zod';
 
-export class UserDto {
-  id?: string;
-  
-  username: string;
+const AccountDto = z.object({
+  email: z.string().email(),
+  password: z
+    .string()
+    .min(8, 'Password should have at least 8 characteres.')
+    .regex(
+      new RegExp('^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+])[a-zA-Z0-9!@#$%^&*()_+]'),
+      'Username must have alphanumeric characters and at least one special character.',
+    ),
+});
 
-  @IsEmail()
-  email: string;
+type AccountDtoType = z.infer<typeof AccountDto>;
 
-  @Length(8)
-  password: string;
+const ProfileDto = z.object({
+  username: z.string().min(3, 'Username must have at least 3 characteres.'),
+  firstname: z.string(),
+  lastname: z.string(),
+  profilePic: z.string().url(),
+});
 
-  firstname: string;
+type ProfileDtoType = z.infer<typeof ProfileDto>;
 
-  lastname: string;
-
-  profilePic?: string;
-
-  createdAt?: Date;
-
-  updatedAt?: Date;
-
-
-  constructor(username: string, email: string, password: string, firstname: string, lastname: string, profilePic?: string) {
-    this.username = username;
-    this.email = email;
-    this.password = password;
-    this.firstname = firstname;
-    this.lastname = lastname;
-    this.profilePic = profilePic;
-    this.createdAt = new Date();
-    this.updatedAt = new Date()
-  }
-}
+export { AccountDto, AccountDtoType, ProfileDto, ProfileDtoType };
