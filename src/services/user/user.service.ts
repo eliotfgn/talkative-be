@@ -1,8 +1,11 @@
 import { User } from '../../types/user';
 import accountRepository from '../../repositories/account.repository';
+import { hashPassword } from '../../utils/password.util';
 
 class UserService {
   async create(payload: User): Promise<any> {
+    payload.account.password = await hashPassword(payload.account.password);
+
     accountRepository.create({
       data: {
         ...payload.account,
