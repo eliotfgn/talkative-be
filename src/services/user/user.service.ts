@@ -1,5 +1,17 @@
+import { User } from '../../types/user';
+import accountRepository from '../../repositories/account.repository';
+
 class UserService {
-  async create(): Promise<any> {}
+  async create(payload: User): Promise<any> {
+    accountRepository.create({
+      data: {
+        ...payload.account,
+        profile: {
+          create: payload.profile,
+        },
+      },
+    });
+  }
 
   // @ts-ignore
   async findAll(): Promise<any[]> {}
