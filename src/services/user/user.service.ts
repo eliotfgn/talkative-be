@@ -87,7 +87,41 @@ class UserService {
     };
   }
 
-  async findByEmail(email: string): Promise<any> {}
+  async findByEmail(email: string): Promise<UserResponse | null> {
+    const user = await accountRepository.findFirstOrThrow({
+      where: {
+        email: email,
+      },
+      include: {
+        profile: true,
+      },
+    });
+
+    if (!user.profile) return null;
+
+    return {
+      ...user.profile,
+      email: user.email,
+    };
+  }
+
+  async findByUsername(username: string): Promise<UserResponse | null> {
+    const user = await profileRepository.findFirstOrThrow({
+      where: {
+        username: username,
+      },
+      include: {
+        account: true,
+      },
+    });
+
+    if (!user.account) return null;
+
+    return {
+      ...user,
+      email: user.account.email,
+    };
+  }
 
   async update(id: string): Promise<any> {}
 
