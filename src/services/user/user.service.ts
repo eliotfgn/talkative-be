@@ -4,10 +4,13 @@ import { hashPassword } from '../../utils/password.util';
 import { Account, Profile } from '@prisma/client';
 import profileRepository from '../../repositories/profile.repository';
 import { EmailExistsError, UsernameExistsError } from '../../errors/user.error';
-import { ProfileDtoType } from './user.dto';
+import { AccountDto, ProfileDto, ProfileDtoType } from './user.dto';
 
 class UserService {
   async create(payload: User): Promise<ProfileDtoType> {
+    AccountDto.parse(payload.account);
+    ProfileDto.parse(payload.profile);
+
     if (await this.emailExist(payload.account.email)) {
       throw new EmailExistsError(payload.account.email);
     }
