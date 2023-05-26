@@ -7,7 +7,7 @@ import { EmailExistsError, UsernameExistsError } from '../../errors/user.error';
 import { AccountDto, ProfileDto, ProfileDtoType } from './user.dto';
 
 class UserService {
-  async create(payload: User): Promise<ProfileDtoType> {
+  async create(payload: User): Promise<UserResponse> {
     AccountDto.parse(payload.account);
     ProfileDto.parse(payload.profile);
 
@@ -33,7 +33,10 @@ class UserService {
       },
     });
 
-    return payload.profile;
+    return {
+      ...data.profile!,
+      email: data.email,
+    };
   }
 
   async emailExist(email: string): Promise<boolean> {
