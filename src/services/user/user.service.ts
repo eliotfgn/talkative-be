@@ -3,18 +3,20 @@ import accountRepository from '../../repositories/account.repository';
 import { hashPassword } from '../../utils/password.util';
 import { Account, Profile } from '@prisma/client';
 import profileRepository from '../../repositories/profile.repository';
+import { EmailExistsError, UsernameExistsError } from '../../errors/user.error';
+import { ProfileDtoType } from './user.dto';
 
 class UserService {
-  async create(payload: User) {
-    payload.account.password = await hashPassword(payload.account.password);
-
+  async create(payload: User): Promise<ProfileDtoType> {
     if (await this.emailExist(payload.account.email)) {
-      return;
+      throw new EmailExistsError(payload.account.email);
     }
 
     if (await this.usernameExist(payload.profile.username)) {
-      return;
+      throw new UsernameExistsError(payload.profile.username);
     }
+
+    payload.account.password = await hashPassword(payload.account.password);
 
     const data = await accountRepository.create({
       data: {
