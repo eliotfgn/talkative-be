@@ -69,7 +69,23 @@ class UserService {
     }));
   }
 
-  async findById(id: string): Promise<any> {}
+  async findById(id: string): Promise<UserResponse | null> {
+    const user = await accountRepository.findFirstOrThrow({
+      where: {
+        id: id,
+      },
+      include: {
+        profile: true,
+      },
+    });
+
+    if (!user.profile) return null;
+
+    return {
+      ...user.profile,
+      email: user.email,
+    };
+  }
 
   async findByEmail(email: string): Promise<any> {}
 

@@ -6,4 +6,4 @@ export interface User {
   profile: ProfileDtoType;
 }
 
-export type UserResponse = { email?: string } & Profile;
+export type UserResponse = { email: string } & Profile;
