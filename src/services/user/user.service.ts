@@ -134,6 +134,34 @@ class UserService {
     return this.findById(id);
   }
 
+  async updatePassword(id: string, password: string): Promise<void> {
+    const hashedPassword: string = await hashPassword(password);
+
+    await accountRepository.update({
+      where: {
+        id: id,
+      },
+      data: {
+        password: hashedPassword,
+      },
+    });
+  }
+
+  async updateEmail(id: string, email: string): Promise<void> {
+    if (await this.emailExist(email)) {
+      throw new EmailExistsError(email);
+    }
+
+    await accountRepository.update({
+      where: {
+        id: id,
+      },
+      data: {
+        email: email,
+      },
+    });
+  }
+
   async delete(id: string): Promise<any> {}
 }
 
