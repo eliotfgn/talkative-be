@@ -1,4 +1,4 @@
-import { User } from '../../types/user';
+import { User, UserResponse } from '../../types/user';
 import accountRepository from '../../repositories/account.repository';
 import { hashPassword } from '../../utils/password.util';
 import { Account, Profile } from '@prisma/client';
@@ -56,8 +56,18 @@ class UserService {
     return !!profile;
   }
 
-  // @ts-ignore
-  async findAll(): Promise<any[]> {}
+  async findAll(): Promise<UserResponse[]> {
+    const users = await accountRepository.findMany({
+      include: {
+        profile: true,
+      },
+    });
+
+    return users.map((user) => ({
+      email: user.email,
+      ...user.profile!,
+    }));
+  }
 
   async findById(id: string): Promise<any> {}
 
