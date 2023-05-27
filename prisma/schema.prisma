@@ -10,53 +10,63 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id         String  @id @default(uuid())
-  username   String  @unique
-  email      String  @unique
-  password   String
+model Account {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  profile   Profile?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Profile {
+  id         String   @id @default(uuid())
+  account    Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  accountId  String   @unique
+  username   String   @unique
   firstname  String?
   lastname   String?
   profilePic String?
-  createdAt  DateTime
-  updatedAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   posts      Post[]
   replies    Reply[]
 }
 
 model Post {
-  id        BigInt   @id @default(autoincrement())
-  title     String
-  content   String?
+  id         BigInt   @id @default(autoincrement())
+  title      String
+  content    String?
   viewsCount Int?
   likesCount Int?
-  createdAt DateTime
-  updatedAt DateTime
-  category  Category @relation(fields: [categoryId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  category   Category @relation(fields: [categoryId], references: [id])
   categoryId BigInt
-  replies   Reply[]
-  author    User @relation(fields: [authorId], references: [id])
-  authorId  String
+  replies    Reply[]
+  author     Profile  @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId   String
 }
 
 model Category {
-  id BigInt @id @default(autoincrement())
-  name String
-  createdAt DateTime
-  banner String?
-  posts Post[]
+  id        BigInt   @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  banner    String?
+  posts     Post[]
 }
 
 model Reply {
-  id BigInt @id @default(autoincrement())
-  post Post @relation(fields: [postId], references: [id])
-  postId BigInt
-  content String
-  createdAt DateTime
-  updatedAt DateTime
-  author User @relation(fields: [authorId], references: [id])
-  authorId String
-  replies Reply[] @relation("ReplyToReply")
-  parentReply Reply? @relation("ReplyToReply", fields: [parentReplyId], references: [id])
+  id            BigInt   @id @default(autoincrement())
+  post          Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId        BigInt
+  content       String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  author        Profile  @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId      String
+  replies       Reply[]  @relation("ReplyToReply")
+  parentReply   Reply?   @relation("ReplyToReply", fields: [parentReplyId], references: [id], onDelete: Cascade)
   parentReplyId BigInt?
 }
