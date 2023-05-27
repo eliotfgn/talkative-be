@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import UserService from '../services/user/user.service';
 import logger from '../utils/logger';
+import { UserResponse } from '../types/user';
 
 class UserController {
   userService: UserService;
@@ -9,7 +10,24 @@ class UserController {
     this.userService = new UserService();
   }
 
-  async getAll(req: Request, res: Response) {}
+  getAll = async (req: Request, res: Response) => {
+    try {
+      const users: UserResponse[] = await this.userService.findAll();
+      res.status(200).json({
+        success: true,
+        message: 'User retrieved successfully.',
+        data: users,
+      });
+    } catch (error) {
+      const e = error as Error;
+      res.status(500).json({
+        success: false,
+        message: 'An unexpected error occurs',
+      });
+
+      logger.error(e.message);
+    }
+  };
 
   async getById(req: Request, res: Response) {}
 
