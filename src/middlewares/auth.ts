@@ -12,8 +12,7 @@ export function verifyToken(request: Request, response: Response, next: NextFunc
       success: false,
       message: 'No token provided.',
     });
-
-    return next();
+    return;
   }
 
   token = auth.split(' ')[1];
@@ -22,6 +21,7 @@ export function verifyToken(request: Request, response: Response, next: NextFunc
     let payload: JwtPayload = verifyAccessToken(token) as JwtPayload;
     // @ts-ignore
     request.user = payload.sub;
+    return next();
   } catch (error) {
     if (error instanceof JsonWebTokenError) {
       response.status(403).json({
@@ -36,6 +36,4 @@ export function verifyToken(request: Request, response: Response, next: NextFunc
       logger.error(error.message);
     }
   }
-
-  return next();
 }
