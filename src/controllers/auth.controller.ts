@@ -20,7 +20,11 @@ class AuthController {
 
     try {
       userResponse = await this.authService.register(payload);
-      response.status(201).json(userResponse);
+      response.status(201).json({
+        success: true,
+        message: 'Successfully registered.',
+        data: userResponse,
+      });
       logger.info('Successfully registered: ' + userResponse.accountId);
     } catch (error) {
       if (error instanceof UsernameExistsError || error instanceof EmailExistsError) {
