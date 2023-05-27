@@ -25,7 +25,6 @@ class AuthController {
         message: 'Successfully registered.',
         data: userResponse,
       });
-      logger.info('Successfully registered: ' + userResponse.accountId);
     } catch (error) {
       if (error instanceof UsernameExistsError || error instanceof EmailExistsError) {
         userResponse = {
@@ -59,7 +58,6 @@ class AuthController {
           message: 'An unexpected error occurs.',
         };
         response.status(500).json(userResponse);
-        logger.error('Error when creating user.');
         logger.error(e.message);
       }
     }
@@ -79,7 +77,6 @@ class AuthController {
           token: token,
         },
       });
-      logger.info('Successfull login!');
     } catch (error) {
       if (error instanceof IncorrectPasswordError) {
         response.status(403).json({
@@ -95,7 +92,6 @@ class AuthController {
         });
       } else {
         const e = error as Error;
-        logger.error('Error occurs when logging.');
         logger.error(e.message);
       }
     }
