@@ -10,6 +10,7 @@
   "dependencies": {
     "@eslint/create-config": "0.4.3",
     "@prisma/client": "^4.12.0",
+    "bcrypt": "^5.1.0",
     "class-validator": "^0.14.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
