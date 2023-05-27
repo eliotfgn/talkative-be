@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
 const AccountDto = z.object({
-  email: z.string().email(),
+  email: z.string().email('Invalid email format.'),
   password: z
     .string()
     .min(8, 'Password should have at least 8 characteres.')
     .regex(
       new RegExp('^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+])[a-zA-Z0-9!@#$%^&*()_+]'),
-      'Username must have alphanumeric characters and at least one special character.',
+      'Password must have alphanumeric characters and at least one special character.',
     ),
 });
 
@@ -17,7 +17,7 @@ const ProfileDto = z.object({
   username: z.string().min(3, 'Username must have at least 3 characteres.'),
   firstname: z.string(),
   lastname: z.string(),
-  profilePic: z.string().url(),
+  profilePic: z.string(),
 });
 
 type ProfileDtoType = z.infer<typeof ProfileDto>;
