@@ -5,6 +5,7 @@ import { EmailExistsError, UsernameExistsError, UserNotFoundError } from '../err
 import { ErrorResponse } from '../types/error';
 import { IncorrectPasswordError } from '../errors/auth.error';
 import logger from '../utils/logger';
+import { ZodError } from 'zod';
 
 class AuthController {
   authService: AuthService;
@@ -29,6 +30,25 @@ class AuthController {
           message: error.message,
         };
         response.status(400).json(userResponse);
+      } else if (error instanceof ZodError) {
+        console.log(error.errors);
+
+        const errorPayload = error.errors.map((error) => {
+          return {
+            field: error.path[0],
+            message: error.message,
+            code: error.code,
+          };
+        });
+
+        const errorResponse = {
+          success: false,
+          status: 400,
+          message: 'Invalid parameters',
+          data: errorPayload,
+        };
+
+        response.status(400).json(errorResponse);
       } else {
         userResponse = {
           success: false,
