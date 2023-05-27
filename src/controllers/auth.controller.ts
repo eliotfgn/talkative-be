@@ -31,8 +31,6 @@ class AuthController {
         };
         response.status(400).json(userResponse);
       } else if (error instanceof ZodError) {
-        console.log(error.errors);
-
         const errorPayload = error.errors.map((error) => {
           return {
             field: error.path[0],
