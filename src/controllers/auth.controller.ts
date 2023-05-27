@@ -4,6 +4,7 @@ import { User, UserResponse } from '../types/user';
 import { EmailExistsError, UsernameExistsError, UserNotFoundError } from '../errors/user.error';
 import { ErrorResponse } from '../types/error';
 import { IncorrectPasswordError } from '../errors/auth.error';
+import logger from '../utils/logger';
 
 class AuthController {
   authService: AuthService;
@@ -13,6 +14,7 @@ class AuthController {
   }
 
   async register(request: Request, response: Response) {
+    logger.info('GET request');
     const payload: User = request.body;
     let userResponse: UserResponse | ErrorResponse;
 
@@ -40,6 +42,8 @@ class AuthController {
   }
 
   async login(request: Request, response: Response) {
+    logger.info('GET request');
+
     const payload: { email: string; password: string } = request.body;
     let token: string;
 
