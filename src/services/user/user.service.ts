@@ -90,22 +90,12 @@ class UserService {
     };
   }
 
-  async findByEmail(email: string): Promise<UserResponse | null> {
-    const user = await accountRepository.findFirstOrThrow({
+  async findByEmail(email: string): Promise<Account | null> {
+    return await accountRepository.findFirst({
       where: {
         email: email,
       },
-      include: {
-        profile: true,
-      },
     });
-
-    if (!user.profile) return null;
-
-    return {
-      ...user.profile,
-      email: user.email,
-    };
   }
 
   async findByUsername(username: string): Promise<UserResponse | null> {
