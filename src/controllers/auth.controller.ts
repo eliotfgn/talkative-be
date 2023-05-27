@@ -15,13 +15,13 @@ class AuthController {
   }
 
   public register = async (request: Request, response: Response) => {
-    logger.info('GET request');
     const payload: User = request.body;
     let userResponse: UserResponse | ErrorResponse;
 
     try {
       userResponse = await this.authService.register(payload);
       response.status(201).json(userResponse);
+      logger.info('Successfully registered: ' + userResponse.accountId);
     } catch (error) {
       if (error instanceof UsernameExistsError || error instanceof EmailExistsError) {
         userResponse = {
@@ -48,19 +48,20 @@ class AuthController {
 
         response.status(400).json(errorResponse);
       } else {
+        const e = error as Error;
         userResponse = {
           success: false,
           status: 500,
           message: 'An unexpected error occurs.',
         };
         response.status(500).json(userResponse);
+        logger.error('Error when creating user.');
+        logger.error(e.message);
       }
     }
   };
 
   login = async (request: Request, response: Response) => {
-    logger.info('GET request');
-
     const payload: { email: string; password: string } = request.body;
     let token: string;
 
@@ -74,6 +75,7 @@ class AuthController {
           token: token,
         },
       });
+      logger.info('Successfull login!');
     } catch (error) {
       if (error instanceof IncorrectPasswordError) {
         response.status(403).json({
@@ -87,6 +89,10 @@ class AuthController {
           status: 404,
           message: 'User not found.',
         });
+      } else {
+        const e = error as Error;
+        logger.error('Error occurs when logging.');
+        logger.error(e.message);
       }
     }
   };
