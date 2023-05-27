@@ -7,6 +7,8 @@ import { EmailExistsError, UsernameExistsError } from '../../errors/user.error';
 import { AccountDto, ProfileDto, ProfileDtoType } from './user.dto';
 
 class UserService {
+  constructor() {}
+
   async create(payload: User): Promise<UserResponse> {
     AccountDto.parse(payload.account);
     ProfileDto.parse(payload.profile);

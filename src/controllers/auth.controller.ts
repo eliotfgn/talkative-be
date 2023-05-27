@@ -13,13 +13,14 @@ class AuthController {
     this.authService = new AuthService();
   }
 
-  async register(request: Request, response: Response) {
+  public register = async (request: Request, response: Response) => {
     logger.info('GET request');
     const payload: User = request.body;
     let userResponse: UserResponse | ErrorResponse;
 
     try {
       userResponse = await this.authService.register(payload);
+      response.status(201).json(userResponse);
     } catch (error) {
       if (error instanceof UsernameExistsError || error instanceof EmailExistsError) {
         userResponse = {
@@ -37,11 +38,9 @@ class AuthController {
         response.status(500).json(userResponse);
       }
     }
+  };
 
-    response.status(201).json(userResponse);
-  }
-
-  async login(request: Request, response: Response) {
+  login = async (request: Request, response: Response) => {
     logger.info('GET request');
 
     const payload: { email: string; password: string } = request.body;
@@ -72,7 +71,7 @@ class AuthController {
         });
       }
     }
-  }
+  };
 }
 
 export default AuthController;
