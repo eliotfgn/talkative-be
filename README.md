@@ -25,18 +25,26 @@ or
 yarn install
 ```
 
-2. Create a `.env` file in the root directory and add the following environment variables:
+2. Create a `.env` file in the root directory and add the corresponding environment variables from `.env.example`:
 
-```
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=username
-DB_PASSWORD=password
-DB_NAME=talkative
+```bash
+cp .env.example .env
 ```
 
 3. Create a PostgreSQL database named `talkative` and run the migrations
 
 ```bash
-npx prisma migrate dev --name init
+yarn db:push
 ```
+
+4. Then start the project in development environment:
+
+````bash
+yarn dev
+````
+
+5. To build and run the project in prod environment:
+
+````bash
+yarn start
+````
