@@ -3,6 +3,8 @@ import { User, UserResponse } from '../../types/user';
 import { Account } from '@prisma/client';
 import { compare } from '../../utils/password.util';
 import { generateAccessToken } from '../../utils/jwt.util';
+import { UserNotFoundError } from '../../errors/user.error';
+import { IncorrectPasswordError } from '../../errors/auth.error';
 
 class AuthService {
   userService: UserService;
@@ -18,12 +20,12 @@ class AuthService {
   async login(payload: { email: string; password: string }) {
     const account: Account | null = await this.userService.findByEmail(payload.email);
 
-    if (!account) return null;
+    if (!account) throw new UserNotFoundError(payload.email);
 
     if (await compare(payload.password, account.password)) {
       return generateAccessToken(account.id);
     } else {
-      return null;
+      throw new IncorrectPasswordError();
     }
   }
 }
