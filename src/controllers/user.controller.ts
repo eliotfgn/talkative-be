@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import UserService from '../services/user/user.service';
 import logger from '../utils/logger';
 import { UserResponse } from '../types/user';
+import { ProfileDtoType } from '../services/user/user.dto';
+import { Prisma } from '@prisma/client';
 
 class UserController {
   userService: UserService;
@@ -87,7 +89,37 @@ class UserController {
     }
   };
 
-  async update(req: Request, res: Response) {}
+  update = async (req: Request, res: Response) => {
+    const id: string = req.params.id;
+    const payload: ProfileDtoType = req.body;
+
+    try {
+      const data = await this.userService.update(id, payload);
+
+      res.status(200).json({
+        success: true,
+        status: 200,
+        data: data,
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        res.status(404).json({
+          success: false,
+          status: 404,
+          message: 'User to update not found.',
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          status: 500,
+          message: 'An unexpected error occurs',
+        });
+
+        //@ts-ignore
+        logger.log(error.message);
+      }
+    }
+  };
 
   async remove(req: Request, res: Response) {}
 }
