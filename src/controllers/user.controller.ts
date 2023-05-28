@@ -29,7 +29,33 @@ class UserController {
     }
   };
 
-  async getById(req: Request, res: Response) {}
+  getById = async (request: Request, response: Response) => {
+    const id: string = request.params.id;
+    try {
+      const user: UserResponse | null = await this.userService.findById(id);
+
+      if (user) {
+        response.status(200).send({
+          success: true,
+          status: 200,
+          message: 'User retrieved successfully',
+          data: user,
+        });
+      } else {
+        response.status(404).send({
+          success: false,
+          status: 404,
+          message: 'User profile not found.',
+        });
+      }
+    } catch (error) {
+      response.status(404).send({
+        success: false,
+        status: 404,
+        message: `User with id ${id} not found.`,
+      });
+    }
+  };
 
   getConnectedUser = async (req: Request, res: Response) => {
     // @ts-ignore
