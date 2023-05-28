@@ -139,6 +139,10 @@ class UserController {
     }
   };
 
+  updatePassword = async (request: Request, response: Response) => {
+    //TODO
+  };
+
   remove = async (req: Request, res: Response) => {
     const id: string = req.params.id;
     //@ts-ignore
