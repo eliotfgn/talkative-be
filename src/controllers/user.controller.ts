@@ -139,7 +139,30 @@ class UserController {
     }
   };
 
-  async remove(req: Request, res: Response) {}
+  remove = async (req: Request, res: Response) => {
+    const id: string = req.params.id;
+    //@ts-ignore
+    const authenticatedUser: string = req.user;
+
+    if (authenticatedUser === id) {
+      //...
+    }
+
+    try {
+      const success: boolean = await this.userService.delete(id);
+
+      res.status(200).json({
+        success: success,
+        message: `User with id ${id} successfully deleted`,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        status: 500,
+        message: 'An unexpected error occurs',
+      });
+    }
+  };
 }
 
 export default UserController;
