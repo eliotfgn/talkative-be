@@ -119,6 +119,8 @@ class UserService {
   }
 
   async update(id: string, payload: ProfileDtoType): Promise<UserResponse | null> {
+    ProfileDto.parse(payload);
+
     const data = await profileRepository.update({
       where: {
         accountId: id,
