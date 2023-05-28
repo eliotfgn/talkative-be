@@ -4,6 +4,7 @@ import logger from '../utils/logger';
 import { UserResponse } from '../types/user';
 import { ProfileDtoType } from '../services/user/user.dto';
 import { Prisma } from '@prisma/client';
+import { ZodError } from 'zod';
 
 class UserController {
   userService: UserService;
@@ -108,6 +109,23 @@ class UserController {
           status: 404,
           message: 'User to update not found.',
         });
+      } else if (error instanceof ZodError) {
+        const errorPayload = error.errors.map((error) => {
+          return {
+            field: error.path[0],
+            message: error.message,
+            code: error.code,
+          };
+        });
+
+        const errorResponse = {
+          success: false,
+          status: 400,
+          message: 'Invalid parameters',
+          data: errorPayload,
+        };
+
+        res.status(400).json(errorResponse);
       } else {
         res.status(500).json({
           success: false,
