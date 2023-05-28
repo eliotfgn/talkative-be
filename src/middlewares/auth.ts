@@ -26,7 +26,7 @@ export function verifyToken(request: Request, response: Response, next: NextFunc
     if (error instanceof JsonWebTokenError) {
       response.status(403).json({
         success: false,
-        message: 'Malformed or expired token.',
+        message: error.name === 'TokenExpiredError' ? 'Token expired.' : 'Token malformed.',
       });
     } else if (error instanceof Error) {
       response.status(500).json({
