@@ -37,8 +37,8 @@ model Post {
   id         BigInt   @id @default(autoincrement())
   title      String
   content    String?
-  viewsCount Int?
-  likesCount Int?
+  viewsCount Int?     @default(0)
+  likesCount Int?     @default(0)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   category   Category @relation(fields: [categoryId], references: [id])
