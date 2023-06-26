@@ -14,4 +14,8 @@ class CommentService {
     async findAll() : Promise<Category[]> {
         return await categoryRepository.findMany();
     }
+
+    async findById(id: number): Promise<Category> {
+        return await categoryRepository.findFirstOrThrow({ where: {id}});
+    }
 }
