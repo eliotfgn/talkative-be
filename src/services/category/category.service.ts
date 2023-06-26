@@ -11,7 +11,7 @@ class CommentService {
         return data;
     }
 
-    async findAll() : Promise<Category[]> {
+    async findAll(): Promise<Category[]> {
         return await categoryRepository.findMany();
     }
 
@@ -25,6 +25,10 @@ class CommentService {
             data: payload,
         });
 
-        return data
+        return data;
+    }
+
+    async delete(id: number): Promise<void> {
+        await categoryRepository.delete({ where: {id} });
     }
 }
