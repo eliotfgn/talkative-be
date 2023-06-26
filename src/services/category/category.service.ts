@@ -18,4 +18,13 @@ class CommentService {
     async findById(id: number): Promise<Category> {
         return await categoryRepository.findFirstOrThrow({ where: {id}});
     }
+
+    async update(id: number, payload : CategoryDtoType): Promise<Category> {
+        const data = await categoryRepository.update({
+            where: { id },
+            data: payload,
+        });
+
+        return data
+    }
 }
