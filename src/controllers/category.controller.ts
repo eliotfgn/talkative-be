@@ -4,7 +4,7 @@ import CategoryService from "../services/category/category.service";
 import { CategoryDtoType } from "../services/category/category.dto";
 import logger from '../utils/logger';
 
-class CategoryController {
+export default class CategoryController {
     private categoryService: CategoryService;
 
     constructor() {
