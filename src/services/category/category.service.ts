@@ -10,4 +10,8 @@ class CommentService {
 
         return data;
     }
+
+    async findAll() : Promise<Category[]> {
+        return await categoryRepository.findMany();
+    }
 }
