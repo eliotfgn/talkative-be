@@ -2,7 +2,7 @@ import { Category } from "@prisma/client";
 import categoryRepository from "../../repositories/category.repository";
 import { CategoryDtoType } from "./category.dto";
 
-class CommentService {
+class CategoryService {
     async create(payload : CategoryDtoType): Promise<Category> {
         const data = await categoryRepository.create({
             data: payload,
@@ -32,3 +32,5 @@ class CommentService {
         await categoryRepository.delete({ where: {id} });
     }
 }
+
+export default CategoryService;
