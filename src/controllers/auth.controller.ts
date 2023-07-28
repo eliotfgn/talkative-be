@@ -31,6 +31,8 @@ class AuthController {
           status: 400,
           message: error.message,
         });
+        
+        return;
       }
       
       if (error instanceof ZodError) {
@@ -48,6 +50,8 @@ class AuthController {
           message: 'Invalid parameters',
           data: errorPayload,
         });
+        
+        return;
       }
       
       response.status(500).json({
