@@ -1,10 +1,9 @@
-import { Request, Response } from 'express';
-import UserService from '../services/user/user.service';
-import logger from '../utils/logger';
-import { UserResponse } from '../types/user';
-import { ProfileDtoType } from '../services/user/user.dto';
 import { Prisma } from '@prisma/client';
 import { ZodError } from 'zod';
+import type { Request, Response } from 'express';
+import UserService from '../services/user/user.service';
+import { ProfileDtoType } from '../services/user/user.dto';
+import logger from '../utils/logger';
 
 class UserController {
   userService: UserService;
@@ -13,44 +12,47 @@ class UserController {
     this.userService = new UserService();
   }
 
-  getAll = async (req: Request, res: Response) => {
+  async getAll(request: Request, response: Response): Promise<void> {
     try {
-      const users: UserResponse[] = await this.userService.findAll();
-      res.status(200).json({
+      const users = await this.userService.findAll();
+      
+      response.status(200).json({
         success: true,
         message: 'User retrieved successfully.',
         data: users,
       });
     } catch (error) {
-      const e = error as Error;
-      res.status(500).json({
+      response.status(500).json({
         success: false,
         message: 'An unexpected error occurs',
       });
 
-      logger.error(e.message);
+      logger.error((error as Error).message);
     }
   };
 
-  getById = async (request: Request, response: Response) => {
+  async getById(request: Request, response: Response): Promise<void> {
     const id: string = request.params.id;
+    
     try {
-      const user: UserResponse | null = await this.userService.findById(id);
+      const user = await this.userService.findById(id);
 
-      if (user) {
-        response.status(200).send({
-          success: true,
-          status: 200,
-          message: 'User retrieved successfully',
-          data: user,
-        });
-      } else {
+      if (!user) {
         response.status(404).send({
           success: false,
           status: 404,
           message: 'User profile not found.',
         });
+        
+        return;
       }
+      
+      response.status(200).send({
+        success: true,
+        status: 200,
+        message: 'User retrieved successfully',
+        data: user,
+      });
     } catch (error) {
       response.status(404).send({
         success: false,
@@ -60,56 +62,61 @@ class UserController {
     }
   };
 
-  getConnectedUser = async (req: Request, res: Response) => {
-    // @ts-ignore
-    const userId: string = req.user;
-    let userResponse;
-
+  async getConnectedUser(request: Request, response: Response): Promise<void> {
+    const userId: string = request.user;
+    
     try {
-      userResponse = await this.userService.findById(userId);
+      const userResponse = await this.userService.findById(userId);
 
-      if (userResponse) {
-        res.status(200).json({
-          success: true,
-          message: 'User successfully retrieved.',
-          data: userResponse,
-        });
-      } else {
-        res.status(404).json({
+      if (!userResponse) {
+        response.status(404).json({
           success: false,
           message: 'User not found.',
         });
+        
+        return;
       }
+      
+      response.status(200).json({
+        success: true,
+        message: 'User successfully retrieved.',
+        data: userResponse,
+      });
     } catch (error) {
-      const e = error as Error;
-      res.status(500).json({
+      response.status(500).json({
         success: false,
         message: 'An unexpected error occurs.',
       });
-      logger.error(e.message);
+      
+      logger.error((error as Error).message);
     }
   };
 
-  update = async (req: Request, res: Response) => {
-    const id: string = req.params.id;
-    const payload: ProfileDtoType = req.body;
+  async update(request: Request, response: Response): Promise<void> {
+    const id: string = request.params.id;
+    const payload: ProfileDtoType = request.body;
 
     try {
       const data = await this.userService.update(id, payload);
 
-      res.status(200).json({
+      response.status(200).json({
         success: true,
         status: 200,
         data: data,
       });
+      
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        res.status(404).json({
+        response.status(404).json({
           success: false,
           status: 404,
           message: 'User to update not found.',
         });
-      } else if (error instanceof ZodError) {
+        
+        return;
+      } 
+      
+      if (error instanceof ZodError) {
         const errorPayload = error.errors.map((error) => {
           return {
             field: error.path[0],
@@ -125,42 +132,43 @@ class UserController {
           data: errorPayload,
         };
 
-        res.status(400).json(errorResponse);
-      } else {
-        res.status(500).json({
-          success: false,
-          status: 500,
-          message: 'An unexpected error occurs',
-        });
-
-        //@ts-ignore
-        logger.log(error.message);
+        response.status(400).json(errorResponse);
+        
+        return;
       }
+      
+      
+      response.status(500).json({
+        success: false,
+        status: 500,
+        message: 'An unexpected error occurs',
+      });
+
+      logger.error(error.message);
     }
   };
 
-  updatePassword = async (request: Request, response: Response) => {
+  async updatePassword(request: Request, response: Response): Promise<void> {
     //TODO
   };
 
-  remove = async (req: Request, res: Response) => {
-    const id: string = req.params.id;
-    //@ts-ignore
-    const authenticatedUser: string = req.user;
+  async remove(request: Request, response: Response): Promise<void> {
+    const id: string = request.params.id;
+    const authenticatedUser: string = request.user;
 
     if (authenticatedUser === id) {
       //...
     }
 
     try {
-      const success: boolean = await this.userService.delete(id);
+      const success = await this.userService.delete(id);
 
-      res.status(200).json({
+      response.status(200).json({
         success: success,
         message: `User with id ${id} successfully deleted`,
       });
     } catch (error) {
-      res.status(500).json({
+      response.status(500).json({
         success: false,
         status: 500,
         message: 'An unexpected error occurs',

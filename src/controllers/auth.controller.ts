@@ -1,11 +1,10 @@
+import { ZodError } from 'zod';
+import type { Request, Response } from 'express';
 import AuthService from '../services/auth/auth.service';
-import { Request, Response } from 'express';
-import { User, UserResponse } from '../types/user';
+import { User } from '../types/user';
 import { EmailExistsError, UsernameExistsError, UserNotFoundError } from '../errors/user.error';
-import { ErrorResponse } from '../types/error';
 import { IncorrectPasswordError } from '../errors/auth.error';
 import logger from '../utils/logger';
-import { ZodError } from 'zod';
 
 class AuthController {
   authService: AuthService;
@@ -14,12 +13,12 @@ class AuthController {
     this.authService = new AuthService();
   }
 
-  public register = async (request: Request, response: Response) => {
-    const payload: User = request.body;
-    let userResponse: UserResponse | ErrorResponse;
+  public async register(request: Request, response: Response): Promise<void> {
+    const userPayload: User = request.body;
 
     try {
-      userResponse = await this.authService.register(payload);
+      const userResponse = await this.authService.register(userPayload);
+      
       response.status(201).json({
         success: true,
         message: 'Successfully registered.',
@@ -27,13 +26,16 @@ class AuthController {
       });
     } catch (error) {
       if (error instanceof UsernameExistsError || error instanceof EmailExistsError) {
-        userResponse = {
+        response.status(400).json({
           success: false,
           status: 400,
           message: error.message,
-        };
-        response.status(400).json(userResponse);
-      } else if (error instanceof ZodError) {
+        });
+        
+        return;
+      }
+      
+      if (error instanceof ZodError) {
         const errorPayload = error.errors.map((error) => {
           return {
             field: error.path[0],
@@ -42,33 +44,31 @@ class AuthController {
           };
         });
 
-        const errorResponse = {
+        response.status(400).json({
           success: false,
           status: 400,
           message: 'Invalid parameters',
           data: errorPayload,
-        };
-
-        response.status(400).json(errorResponse);
-      } else {
-        const e = error as Error;
-        userResponse = {
-          success: false,
-          status: 500,
-          message: 'An unexpected error occurs.',
-        };
-        response.status(500).json(userResponse);
-        logger.error(e.message);
+        });
+        
+        return;
       }
+      
+      response.status(500).json({
+        success: false,
+        status: 500,
+        message: 'An unexpected error occurs.',
+      });
+      
+      logger.error((error as Error).message);
     }
   };
 
-  login = async (request: Request, response: Response) => {
+  async login(request: Request, response: Response): Promise<void> {
     const payload: { email: string; password: string } = request.body;
-    let token: string;
-
+    
     try {
-      token = await this.authService.login(payload);
+      const token = await this.authService.login(payload);
 
       response.status(200).json({
         success: true,
@@ -78,22 +78,28 @@ class AuthController {
         },
       });
     } catch (error) {
+      
       if (error instanceof IncorrectPasswordError) {
         response.status(403).json({
           success: false,
           status: 403,
           message: 'Incorrect password.',
         });
-      } else if (error instanceof UserNotFoundError) {
+        
+        return;
+      }
+      
+      if (error instanceof UserNotFoundError) {
         response.status(404).json({
           success: false,
           status: 404,
           message: 'User not found.',
         });
-      } else {
-        const e = error as Error;
-        logger.error(e.message);
+        
+        return;
       }
+
+      logger.error((error as Error).message);
     }
   };
 }

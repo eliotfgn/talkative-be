@@ -1,6 +1,6 @@
 import UserService from '../user/user.service';
 import { User, UserResponse } from '../../types/user';
-import { Account } from '@prisma/client';
+import type { LoginPayload  } from '../../types/auth';
 import { compare } from '../../utils/password.util';
 import { generateAccessToken } from '../../utils/jwt.util';
 import { UserNotFoundError } from '../../errors/user.error';
@@ -17,16 +17,18 @@ class AuthService {
     return await this.userService.create(payload);
   }
 
-  async login(payload: { email: string; password: string }) {
-    const account: Account | null = await this.userService.findByEmail(payload.email);
+  async login(payload: LoginPayload): Promise<string> {
+    const account = await this.userService.findByEmail(payload.email);
 
-    if (!account) throw new UserNotFoundError(payload.email);
+    if (!account) {
+      throw new UserNotFoundError(payload.email);
+    }
 
-    if (await compare(payload.password, account.password)) {
-      return generateAccessToken(account.id);
-    } else {
+    if (!(await compare(payload.password, account.password))) {
       throw new IncorrectPasswordError();
     }
+
+    return generateAccessToken(account.id);
   }
 }
 
